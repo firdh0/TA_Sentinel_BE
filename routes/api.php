@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WebhookController;
 
 // Route::get('test', function (Request $request) {
 //     return 'success';
@@ -24,6 +25,8 @@ Route::group(['middleware' => 'jwt.verify'], function($router){
     Route::get('users/{username}', [UserController::class, 'getUserByUsername']);
 
     Route::put('update', [UserController::class, 'update']);
+
+    Route::put('update_pin', [UserController::class, 'updatePin']);
 
     Route::post('logout', [AuthController::class, 'logout']);
 });

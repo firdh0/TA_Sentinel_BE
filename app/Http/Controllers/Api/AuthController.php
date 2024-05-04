@@ -23,7 +23,7 @@ class AuthController extends Controller
             'username' => 'required|string',
             'password' => 'required|string|min:6',
             'pin' => 'required|digits:6',
-            // 'phone_number' => 'required|string',
+            'phone_number' => 'required|string',
         ]);
 
         if($validator->fails()){
@@ -41,7 +41,9 @@ class AuthController extends Controller
                 $profilePicture = $this->uploadBase64Image($request->profile_picture);
             }
 
-            $phoneNumber = '1234567890';
+            $phoneNumber = $request->phone_number;
+
+            // $phoneNumber = '1234567890';
 
             $user = User::create([
                 'name' => $request->name,

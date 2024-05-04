@@ -39,7 +39,7 @@ class UserController extends Controller
         try {
             $user = User::find(auth()->user()->id);
 
-            $data = $request->only('name', 'email', 'username', 'password', 'phone_number', 'profile_picture');
+            $data = $request->only('name', 'email', 'pin', 'username', 'password', 'phone_number', 'profile_picture');
 
             if($request->username != $user->username){
                 $isExistUsername = User::where('username', $request->username)->exists();
@@ -56,7 +56,7 @@ class UserController extends Controller
             }
 
             if($request->password){
-                $data['password'] = bycrypt($request->password);
+                $data['password'] = bcrypt($request->password);
             }
 
             if($request->profile_picture){
@@ -73,6 +73,37 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
         }
+    }
+
+    public function updatePin(Request $request){
+        try {
+            $user = User::find(auth()->user()->id);
+
+            $data = $request->only('name', 'email', 'pin', 'username', 'password', 'phone_number', 'profile_picture');
+
+            $validator = Validator::make($request->all(), [
+                'previous_pin' => 'required|digits:6',
+                'new_pin' => 'required|digits:6'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()], 400);
+            }
+
+            if (!pinChecker($request->previous_pin)) {
+                return response()->json(['message' => 'PIN lama kamu salah'], 400);
+            }
+
+            if($request->new_pin){
+                $data['pin'] = $request->new_pin;
+            }
+    
+            $user->update($data);
+
+            return response()->json(['message' => 'User telah terupdate']);                     
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }   
     }
 
     public function isEmailExist(Request $request){
