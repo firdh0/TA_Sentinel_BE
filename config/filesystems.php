@@ -44,6 +44,16 @@ return [
             'throw' => false,
         ],
 
+        'gcs' => [
+            'driver' => 'gcs',
+            'project_id' => env('GOOGLE_CLOUD_PROJECT_ID', 'ta-sentinel-be'),
+            'key_file' => env('GOOGLE_CLOUD_KEY_FILE', 'ta-sentinel-photo-profile.json'), // Path ke file kunci JSON
+            'bucket' => env('GOOGLE_CLOUD_STORAGE_BUCKET', 'ta-sentinel-profile-photo'),
+            'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', null), // Optional
+            'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', null), // Optional
+            'visibility' => 'public', // Optional: Bisa 'private' atau 'public'
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

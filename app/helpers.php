@@ -13,7 +13,14 @@ function getUser($param){
 
     $user->pin = $user->pin;
     $user->username = $user->username;
-    $user->profile_picture = $user->profile_picture ? url('storage/'.$user->profile_picture) : "";
+    // $user->profile_picture = $user->profile_picture ? url('storage/'.$user->profile_picture) : "";
+
+    if ($user->profile_picture) {
+        $bucketName = env('GOOGLE_CLOUD_STORAGE_BUCKET');
+        $user->profile_picture = sprintf('https://storage.googleapis.com/%s/%s', $bucketName, $user->profile_picture);
+    } else {
+        $user->profile_picture = "";
+    }
 
     return $user;
 };

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Melihovv\Base64ImageDecoder\Base64ImageDecoder;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Google\Cloud\Storage\StorageClient;
 
 class AuthController extends Controller
 {
@@ -55,7 +56,7 @@ class AuthController extends Controller
                 'verified' => ($phoneNumber) ? true : false,
                 'profile_picture' => $profilePicture,
             ]);
-            
+
             $token = JWTAuth::attempt([
                 'email' => $request->email,
                 'password' => $request->password
@@ -103,6 +104,18 @@ class AuthController extends Controller
         }
     }
 
+    // private function uploadBase64Image($base64Image){
+    //     $decoder = new Base64ImageDecoder($base64Image, $allowedFormats = ['jpeg', 'png', 'jpg']);
+
+    //     $decodedContent = $decoder->getDecodedContent();
+    //     $format = $decoder->getFormat();
+    //     $image = Str::random(10).'.'.$format;
+
+    //     Storage::disk('public')->put($image, $decodedContent);
+
+    //     return $image;
+    // }
+
     private function uploadBase64Image($base64Image){
         $decoder = new Base64ImageDecoder($base64Image, $allowedFormats = ['jpeg', 'png', 'jpg']);
 
@@ -110,11 +123,26 @@ class AuthController extends Controller
         $format = $decoder->getFormat();
         $image = Str::random(10).'.'.$format;
 
-        Storage::disk('public')->put($image, $decodedContent);
+        // Inisialisasi Storage Client
+        $storage = new StorageClient([
+            'projectId' => env('GOOGLE_CLOUD_PROJECT_ID'),
+            'keyFilePath' => env('GOOGLE_CLOUD_KEY_FILE'),
+        ]);
 
+        // Mendapatkan bucket
+        $bucket = $storage->bucket(env('GOOGLE_CLOUD_STORAGE_BUCKET'));
+
+        // Mengunggah file ke bucket
+        $object = $bucket->upload($decodedContent, [
+            'name' => $image,
+            'predefinedAcl' => 'publicRead' // Atau 'private' tergantung kebutuhan
+        ]);
+
+        // Mengembalikan URL lengkap gambar yang diunggah
+        // return sprintf('https://storage.googleapis.com/%s/%s', env('GOOGLE_CLOUD_STORAGE_BUCKET'), $image);
         return $image;
     }
-    
+
     public function logout(){
         auth()->logout();
 

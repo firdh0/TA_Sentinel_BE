@@ -1,0 +1,28 @@
+runtime: php82
+
+handlers:
+  - url: /(.*\.(gif|png|jpg|css|js))$
+    static_files: public/\1
+    upload: public/.*\.(gif|png|jpg|css|js)$
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
+
+build_env_variables:
+  GOOGLE_COMPOSER_VERSION: 2.2.1
+
+env_variables:
+  APP_KEY: base64:v90jdEc6V1eBokn2Y3gKpKq9mV1xISbmUh48du6Ig54=
+  APP_DEBUG: true
+  APP_STORAGE: '/tmp'
+  DB_CONNECTION: mysql
+  DB_HOST: 127.0.0.1
+  DB_PORT: 3306
+  DB_DATABASE: sentinel
+  DB_USERNAME: be
+  DB_PASSWORD: be123456
+  DB_SOCKET: '/cloudsql/ta-sentinel-be:asia-southeast2:ta-sentinel-be'
+
+beta_settings:
+  cloud_sql_instances: 'ta-sentinel-be:asia-southeast2:ta-sentinel-be'

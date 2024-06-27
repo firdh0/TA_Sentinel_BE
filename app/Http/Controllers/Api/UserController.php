@@ -26,7 +26,7 @@ class UserController extends Controller
             ->get();
 
         $user->map(function($item){
-            $item->profile_picture = $item->profile_picture ? 
+            $item->profile_picture = $item->profile_picture ?
                 url('storage/'.$item->profile_picture) : '';
 
             return $item;
@@ -97,13 +97,38 @@ class UserController extends Controller
             if($request->new_pin){
                 $data['pin'] = $request->new_pin;
             }
-    
+
             $user->update($data);
 
-            return response()->json(['message' => 'User telah terupdate']);                     
+            return response()->json(['message' => 'User telah terupdate']);
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
-        }   
+        }
+    }
+
+    public function updatePhoneNumber(Request $request){
+        try {
+            $user = User::find(auth()->user()->id);
+
+            // Mengambil data phone_number dari request
+            $data = $request->only('phone_number');
+
+            // Validasi phone_number
+            $validator = Validator::make($request->all(), [
+                'phone_number' => 'required' // Menghapus validasi panjang nomor telepon
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->messages()], 400);
+            }
+
+            // Update phone_number pada user
+            $user->update($data);
+
+            return response()->json(['message' => 'Nomor telepon telah terupdate']);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 
     public function isEmailExist(Request $request){

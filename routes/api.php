@@ -28,6 +28,8 @@ Route::group(['middleware' => 'jwt.verify'], function($router){
 
     Route::put('update_pin', [UserController::class, 'updatePin']);
 
+    Route::put('update_phoneNumber', [UserController::class, 'updatePhoneNumber']);
+
     Route::post('logout', [AuthController::class, 'logout']);
 });
 
